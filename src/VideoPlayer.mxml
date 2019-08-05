@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   height="760" width="1282"
+					   showStatusBar="false"
+					   backgroundColor="#000000"
+					   mouseDown="bordercontainer1_mouseDownHandler(event)"
+					   mouseUp="bordercontainer1_mouseUpHandler(event)"
+					   displayStateChange="windowedapplication1_displayStateChangeHandler(event)"
+					   creationComplete="windowedapplication1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			import player.Player;
+			
+			[Embed(source="images/video_player_icon.png")]   
+			private var playerIconClass:Class;
+			
+			private var _ui:UIComponent = new UIComponent();
+			private var _vp:Player;
+			
+			protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
+			{
+				NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvokeEvent);      
+				
+				var arguments:Array;   
+				var videoPath:String;
+				var videoName:String = "";
+				function onInvokeEvent(invocation:InvokeEvent):void   
+				{   
+					arguments = invocation.arguments;   
+					var separate:String = "videoplayer://";
+					var param:String = encodeURI(arguments.toString());
+					
+					if(param)
+					{
+						var i:int = param.indexOf(separate);
+						if(i > -1)
+						{
+							videoPath = param.substring(i + separate.length, param.length - 1);
+						}
+						else
+						{
+							videoPath = param;
+						}
+					}
+					
+				}  
+				
+				videoPath = "rtmp://127.0.0.1:8000/static/02-python-全栈三期-day50django视图之redirec.mp4";
+				
+				if(!videoPath)
+				{
+					videoname.text = "无效视频源";
+					return;
+				}
+				
+				var tempArr:Array = videoPath.split('/');
+				videoName = tempArr[tempArr.length - 1];
+				
+				videoname.text = videoName;
+				ll.text = " " + videoPath;
+				
+				_vp = new Player(nativeWindow.width, nativeWindow.height, this, videoPath);
+				
+				_ui.width = nativeWindow.width;
+				_ui.height = nativeWindow.height;
+				
+				con.width = _ui.width;
+				con.height = _ui.height;
+				
+				_ui.addChild(_vp);
+				con.addElement(_ui);
+				
+				addEventListener(ResizeEvent.RESIZE, windowedapplication1_resizeHandler);
+				this.move((Screen.mainScreen.visibleBounds.width - nativeWindow.width) / 2, (Screen.mainScreen.visibleBounds.height - nativeWindow.height) / 2);
+				
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				this.close();
+			}
+			
+			protected function bordercontainer1_mouseDownHandler(event:MouseEvent):void
+			{
+				nativeWindow.startMove();
+				
+			}
+			
+			protected function bordercontainer1_mouseUpHandler(event:MouseEvent):void
+			{
+				
+			}
+			
+			protected function windowedapplication1_resizeHandler(event:ResizeEvent):void
+			{
+				_ui.width = nativeWindow.width;
+				_ui.height = nativeWindow.height;
+				
+				con.width = _ui.width;
+				con.height = _ui.height;
+				
+				_vp.resize(nativeWindow.width, nativeWindow.height);
+			}
+			
+			private var _afterDisplayState:String;
+			protected function windowedapplication1_displayStateChangeHandler(event:NativeWindowDisplayStateEvent):void
+			{
+				_afterDisplayState =event.afterDisplayState;
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:BorderContainer id="con" borderColor="#ff6956">
+		<s:backgroundFill> 
+			<s:SolidColor 
+				color="#181d25" 
+				alpha="1"/> 
+		</s:backgroundFill> 
+		
+	</s:BorderContainer>
+	
+	<s:BorderContainer id="titleCon" left="0" right="0" height="35" borderVisible="false">
+		<s:backgroundFill> 
+			<s:SolidColor 
+				color="#181d25" 
+				alpha="0.2"/> 
+		</s:backgroundFill> 
+		<mx:Button skin="@Embed(source='/images/player_icon_30x30.png')" height="30" width="30" left="8" top="5"/>
+		<s:Label id="videoname" text="03.调错技巧-使用边框来检查样式问题" color="#ffffff"  fontWeight="bold" fontSize="16" top="15" left="60" height="30"/>
+		<mx:Button click="button1_clickHandler(event)"
+				   right="3" top="3"
+				   skin="@Embed(source='/images/close_normal_btn.png')"
+				   overSkin="@Embed(source='/images/close_over_btn.png')"
+				   downSkin="@Embed(source='/images/close_down_btn.png')"/>
+	</s:BorderContainer>
+<s:Label id="ll" top="200" color="#ff00ff"/>
+</s:WindowedApplication>
